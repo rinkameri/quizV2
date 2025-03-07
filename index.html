@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Квиз на миллион долларов by rinkameri</title>
+    <style>
+        :root {
+            --main-color: #00ff88;
+            --accent-color: #ff0066;
+            --bg-gradient: linear-gradient(45deg, #1a1a1a 0%, #2b0054 50%, #4a148c 100%);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            font-family: 'Arial', sans-serif;
+            color: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 2rem auto;
+            perspective: 1000px;
+        }
+
+        .question-card {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2.5rem;
+            border-radius: 1.5rem;
+            backdrop-filter: blur(15px);
+            border: 2px solid var(--main-color);
+            box-shadow: 0 0 40px rgba(0, 255, 136, 0.2);
+            transform-style: preserve-3d;
+            margin: 2rem 0;
+            animation: cardEntrance 1s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes cardEntrance {
+            from { opacity: 0; transform: rotateY(90deg) translateZ(100px); }
+            to { opacity: 1; transform: rotateY(0) translateZ(0); }
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            margin: 1rem;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(45deg, var(--main-color), #00ccff);
+            color: #1a1a1a;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.4s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: rotate(45deg);
+            transition: 0.5s;
+        }
+
+        .btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(0, 255, 136, 0.4);
+        }
+
+        .btn:hover::after {
+            left: 150%;
+        }
+
+        @keyframes emergencyBlink {
+            0%, 100% { background-color: transparent; }
+            50% { background-color: var(--accent-color); }
+        }
+
+        .logos {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            display: flex;
+            gap: 1.5rem;
+            z-index: 1000;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem;
+            animation: float 3s ease-in-out infinite;
+            cursor: pointer;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-1rem); }
+        }
+
+        .darknet-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            color: #ff0000;
+            text-align: center;
+            animation: darknetPulse 1s infinite;
+            z-index: 9999;
+            display: none;
+        }
+
+        @keyframes darknetPulse {
+            0% { text-shadow: 0 0 10px #ff0000; }
+            50% { text-shadow: 0 0 50px #ff0000; }
+            100% { text-shadow: 0 0 10px #ff0000; }
+        }
+
+        @media (max-width: 768px) {
+            .question-card { padding: 1.5rem; }
+            .btn { width: 100%; margin: 0.5rem 0; }
+            .darknet-message { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="question-card" id="q1">
+            <h2>Ты гей? 🏳️🌈</h2>
+            <button class="btn" onclick="nextQuestion()">Да</button>
+            <button class="btn" onclick="nextQuestion()">Нет</button>
+        </div>
+
+        <div class="question-card" id="q2" style="display: none;">
+            <h2>Ты за Трампа? 🍊</h2>
+            <button class="btn" onclick="nextQuestion()">А как же!</button>
+            <button class="btn" onclick="nextQuestion()">Никогда!</button>
+        </div>
+
+        <div class="question-card" id="q3" style="display: none;">
+            <h2>Ананас на пицце? 🍍</h2>
+            <button class="btn" onclick="nextQuestion()">Это преступление!</button>
+            <button class="btn" onclick="nextQuestion()">Обожаю!</button>
+        </div>
+
+        <div class="question-card" id="final" style="display: none;">
+            <h2>Хочешь 1.000.000$? 💸</h2>
+            <button class="btn" onclick="triggerApocalypse()">ДА!</button>
+            <button class="btn" onclick="triggerApocalypse()">НЕТ!</button>
+        </div>
+    </div>
+
+    <div class="logos">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/5/57/Binance_Logo.png" 
+             class="logo" 
+             alt="Binance">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" 
+             class="logo" 
+             alt="WhatsApp">
+    </div>
+
+    <div class="darknet-message" id="darknetMsg">
+        ВСЕ ДАННЫЕ ОТПРАВЛЕНЫ В DARKNET<br>
+        <span style="font-size: 1.5rem">(Ваш девайс будет взорван через: <span id="timer">10</span> сек)</span>
+    </div>
+
+    <script>
+        const questions = ['q1', 'q2', 'q3', 'final'];
+        let currentQuestion = 0;
+
+        function nextQuestion() {
+            document.getElementById(questions[currentQuestion]).style.animation = 'cardEntrance 0.5s reverse';
+            setTimeout(() => {
+                document.getElementById(questions[currentQuestion]).style.display = 'none';
+                currentQuestion++;
+                if(currentQuestion < questions.length) {
+                    const nextCard = document.getElementById(questions[currentQuestion]);
+                    nextCard.style.display = 'block';
+                    nextCard.style.animation = 'cardEntrance 0.5s';
+                }
+            }, 500);
+        }
+
+        function triggerApocalypse() {
+            // Активация анимаций
+            document.body.style.animation = 'emergencyBlink 0.1s infinite';
+            const darknetMsg = document.getElementById('darknetMsg');
+            darknetMsg.style.display = 'block';
+
+            // Звуковая система
+            const audio = new Audio('https://cdn.pixabay.com/download/audio/2022/02/22/audio_8b38a9d7c3.mp3');
+            audio.volume = 1;
+            audio.loop = true;
+            audio.play();
+
+            // Таймер и частицы
+            let seconds = 10;
+            const timerInterval = setInterval(() => {
+                document.getElementById('timer').textContent = --seconds;
+            }, 1000);
+
+            const particleStorm = setInterval(() => {
+                const particle = document.createElement('div');
+                particle.style.cssText = `
+                    position: fixed;
+                    width: px;
+                    height: px;
+                    background: radial-gradient( '#00ff88', transparent);
+                    border-radius: 50%;
+                    left: %;
+                    top: %;
+                    animation: particle s linear;
+                `;
+                document.body.appendChild(particle);
+                setTimeout(() => particle.remove(), 2000);
+            }, 50);
+
+            // Финал
+            setTimeout(() => {
+                clearInterval(particleStorm);
+                clearInterval(timerInterval);
+                audio.pause();
+                document.body.style.animation = '';
+                darknetMsg.style.display = 'none';
+                alert('💣 УСТРОЙСТВО ДЕАКТИВИРОВАНО\nВаши данные уже на теневых форумах!');
+            }, 10000);
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('q1').style.display = 'block';
+        });
+    </script>
+</body>
+</html>
